@@ -4,6 +4,8 @@
 
 <h3 align="center">DESENSITIZED FOR SHARING · NOT FULLY TESTED · MAY CONTAIN BUGS</h3>
 
+<p align="center">© 2026 Max Linker Alpha. All Rights Reserved. 本仓库仅用于作品展示，未经许可不得复制、修改或分发。</p>
+
 ---
 
 > **当前版本**: v3.0.0 | **最后更新**: 2026-09-05
