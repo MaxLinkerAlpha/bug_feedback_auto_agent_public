@@ -1,0 +1,27 @@
+# ===== 敏感凭证与运行时数据（禁止提交）=====
+.env
+*_cookies*.json
+bilibili_cookies.json
+# 代理节点配置（含服务器密码）
+config.yaml
+# Steam 社区页面快照（含登录 sessionID）
+Steam.html
+
+# ===== Python =====
+__pycache__/
+*.pyc
+
+# ===== 运行时数据 =====
+*_history.json
+*.log
+*_log.txt
+daily_log.txt
+clash_log.txt
+backfill_log.txt
+merge_log.txt
+run_log.txt
+run_summary.txt
+playwright_tencent_data/
+playwright_xiaoheihe_data/
+playwright_tieba_data/
+temp_bilibili_analysis/
