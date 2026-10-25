@@ -23,7 +23,7 @@ spider_bilibili.py - bilibili 战区：官方号「消息中心-回复我的」�
      - 每轮任务仅 1~2 个 API 请求（nav + msgfeed），默认不翻页
      - nav 与 msgfeed 之间随机休眠 3~6 秒
      - 请求带完整浏览器 UA/Referer/Origin
-     - 失败不重试（重试增加风控暴露面），等下一轮定时任务
+     - 失败不重试，等下一轮定时任务
      - code=-101 → Cookie 过期（状态 "bili_cookie_expired"）
      - code=-352/-412 → 风控（状态 "bili_risk_control"）
 平台字段映射：business="文章" → "[bilibili] 专栏动态"（飞书总表选项，

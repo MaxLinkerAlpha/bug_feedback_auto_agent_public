@@ -275,9 +275,9 @@ async def fetch_xiaoheihe_posts(catchup_since_ts: int = 0) -> List[Dict[str, Any
         )
 
         try:
-            # --- 步骤 0: 首页预热 —— 让站点下发设备指纹 cookie（全新 user_data_dir 首访
-            #     直接打 API 会被判定为可疑设备返回 show_captcha）---
-            print("[🔎] 预热小黑盒首页（建立设备指纹 cookie）...")
+            # --- 步骤 0: 首页预热 —— 建立正常的会话 cookie（全新的 user_data_dir
+            #     直接请求接口会返回 show_captcha）---
+            print("[🔎] 预热小黑盒首页（建立会话 cookie）...")
             try:
                 await page.goto("https://www.xiaoheihe.cn/", wait_until="networkidle",
                                 timeout=30000)
@@ -294,7 +294,7 @@ async def fetch_xiaoheihe_posts(catchup_since_ts: int = 0) -> List[Dict[str, Any
                 if events_data and (events_data.get("status") or "") == "ok":
                     break
                 if events_data and events_data.get("status") == "show_captcha" and attempt == 1:
-                    print("[WARN] 首次请求被风控挑战 (show_captcha)，预热重试...")
+                    print("[WARN] 首次请求返回验证码挑战 (show_captcha)，预热重试...")
                     await asyncio.sleep(3)
                     continue
                 break

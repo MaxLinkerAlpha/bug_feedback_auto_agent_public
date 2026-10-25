@@ -184,7 +184,7 @@ async def main_pipeline() -> None:
 |------|----------|----------|----------|
 | Steam | requests + BeautifulSoup | 无需认证 | 智能代理探测、多端口回退 |
 | Reddit | requests + .json API | 无需认证 | User-Agent 轮换、链接物理清洗 |
-| Discord | requests + Discord API v9 | User Token | 限流保护（每频道休眠 3 秒） |
+| Discord | requests + Discord API v9 | 会话凭据（环境变量注入） | 限流保护（每频道休眠 3 秒） |
 | 腾讯频道 | Playwright + Chromium | QQ 扫码 Cookie | 无头模式、JS 注入滚动、DOM 防抖 |
 | 百度贴吧 | Playwright + Chromium | 持久化登录态（playwright_tieba_data） | 无头模式、持久化设备指纹 |
 | 小黑盒 | Playwright + Chromium（拦截 API 响应） | 无需登录（未登录评论可见） | 评论粒度入库（动态正文不入库）、首页预热获取站点 cookie、统一浏览器上下文（UA / locale / 视口）、show_captcha 重试、详情页间 2~4s 随机等待、仅处理近 XIAOHEIHE_WINDOW_DAYS(30) 天动态 |
@@ -192,7 +192,7 @@ async def main_pipeline() -> None:
 
 > **2026-09-05 bilibili 战区上线**：`spider_bilibili.py` 走消息中心「回复我的」msgfeed API（`/x/msgfeed/reply` + WBI 签名），每条回复的 `source_content` 为完整内容（前端看到的截断是 CSS 行为，API 层无截断）。cursor 翻页参数（实测）：`id` + `reply_time`(=cursor.time) + `like_time=0`（传 `id`+`time` 无效，返回重复数据）。支持 `python spider_bilibili.py --catchup [天数]` 补抓模式（翻页至窗口起点，已入库 rpid 自动去重）。Cookie 更新方式：浏览器导出插件重新导出覆盖 `bilibili_cookies.json`。
 
-> **2026-09-05 小黑盒战区上线（同日 v3.0.1 改评论粒度）**：`spider_xiaoheihe.py` 走 Playwright 拦截页面自然请求方案（API 有 hkey+_time+nonce 签名无法复刻）：主页 `events` API 拦截动态列表（30条/页），逐条进详情页拦截 `link/tree` API 拿评论。★入库粒度（用户指定）：**每条玩家评论一条记录，忽略动态正文**（官方自建内容非反馈），动态标题仅作 AI context；楼中楼子评论内容加 `[回复 {主评论者}]` 前缀；comment_id = `c_{commentid}`（c_ 前缀防与旧动态 linkid 历史键碰撞）。评论级去重的优势：老动态来了新评论也能增量抓到。仅处理发布时间在 `XIAOHEIHE_WINDOW_DAYS`(默认30) 天内的动态；`python spider_xiaoheihe.py --catchup [天数]` 补抓模式滚动加载翻页（最多 6 页）。**风控要点**：全新 user_data_dir 首访必须先预热首页建立指纹 cookie，否则 API 返回 `show_captcha`。
+> **2026-09-05 小黑盒战区上线（同日 v3.0.1 改评论粒度）**：`spider_xiaoheihe.py` 走 Playwright 拦截页面自然请求方案（API 有 hkey+_time+nonce 签名无法复刻）：主页 `events` API 拦截动态列表（30条/页），逐条进详情页拦截 `link/tree` API 拿评论。★入库粒度（用户指定）：**每条玩家评论一条记录，忽略动态正文**（官方自建内容非反馈），动态标题仅作 AI context；楼中楼子评论内容加 `[回复 {主评论者}]` 前缀；comment_id = `c_{commentid}`（c_ 前缀防与旧动态 linkid 历史键碰撞）。评论级去重的优势：老动态来了新评论也能增量抓到。仅处理发布时间在 `XIAOHEIHE_WINDOW_DAYS`(默认30) 天内的动态；`python spider_xiaoheihe.py --catchup [天数]` 补抓模式滚动加载翻页（最多 6 页）。**首次访问注意**：全新的 user_data_dir 首次访问需先加载一次首页，以建立正常的会话 cookie；否则接口会返回验证码挑战（`show_captcha`）。
 
 > **2026-08-18 Steam 修复**：`fetch_steam_comments()` 新增**楼主（OP）正文提取**。此前只提取回复评论（`.commentthread_comment`），导致楼主正文从未入库、纯 OP 帖（0 回复）整篇丢失。现在 OP 从 `.forum_op > .topic/.content` 结构提取为一条独立反馈记录（comment_id = 主题 id，与回复共用同一 AI 分析 + 飞书写入流程）。详见 `ERROR_SUMMARY.md` 2026-08-18 条目。
 

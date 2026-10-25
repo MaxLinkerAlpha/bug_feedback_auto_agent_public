@@ -4,10 +4,10 @@
 百度贴吧爬虫模块 - 使用 Playwright 真实浏览器抓取 tieba.baidu.com
 
 技术方案说明（v2，2026-08-31 由 requests 切换为 Playwright）：
-  - 贴吧为国内站点、服务端渲染 HTML。但百度对非浏览器流量启用「百度安全验证」风控，
-    requests/curl 因 TLS 指纹被识别而返回 403，故改用 Playwright 真实 Chromium 抓取。
+  - 贴吧为国内站点、服务端渲染 HTML。百度对非浏览器流量会启用「百度安全验证」，
+    requests/curl 请求返回 403，故改用 Playwright 驱动 Chromium 抓取。
   - 复用腾讯频道 spider_tencent.py 的 launch_persistent_context 模式：
-    真实浏览器指纹 + 持久化登录态目录（playwright_tieba_data），可首次有头模式扫码登录。
+    持久化登录态目录（playwright_tieba_data），首次可用有头模式扫码登录。
   - 贴吧国内站默认走系统网络（由 代理软件 的 baidu→Domestic 直连规则路由），代码内不额外配置代理。
 
 抓取流程（参考 Steam 论坛的三层验证架构）：

@@ -71,11 +71,11 @@ REDDIT_USER_AGENT = os.getenv(
     "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
 )
 REDDIT_FETCH_LIMIT = int(os.getenv("REDDIT_FETCH_LIMIT", 15))
-# 登录态 cookie 文件（EditThisCookie 导出格式，含 reddit_session/token_v2 等）
-# 带有效 cookie 可显著降低 CAPTCHA 触发率，有效期约 6 个月，需定期更新
+# 登录态 cookie 文件（EditThisCookie 导出格式）
+# cookie 有效期约 6 个月，需定期更新
 REDDIT_COOKIE_FILE = "reddit_cookies.json"
 
-# 完整自洽的浏览器请求头集合（仅换 UA 无意义，TLS 指纹 + 头自洽性才是关键）
+# 浏览器请求头集合（UA 与其余头部需保持一致）
 REDDIT_HEADERS = {
     "User-Agent": REDDIT_USER_AGENT,
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
@@ -99,7 +99,7 @@ HISTORY_FILE = "reddit_history.json"
 
 
 def load_reddit_cookies(session) -> None:
-    """加载 reddit_cookies.json 登录态 cookie 到会话，降低 CAPTCHA 触发率"""
+    """加载 reddit_cookies.json 登录态 cookie 到会话"""
     if not os.path.exists(REDDIT_COOKIE_FILE):
         print(f"  [INFO] 未找到 {REDDIT_COOKIE_FILE}，将无 cookie 匿名抓取")
         return
@@ -322,16 +322,16 @@ async def fetch_reddit_posts(
     #    但同时保留显式 proxies=PROXIES 传递，确保代理生效
     session = requests.Session()
     session.trust_env = False
-    # 完整自洽浏览器 headers（TLS 指纹 + 头一致性是规避 CAPTCHA 的关键）
+    # 浏览器请求头（与 UA 保持一致）
     session.headers.update(REDDIT_HEADERS)
-    # 注入登录态 cookie（reddit_session 等），显著降低 CAPTCHA 触发率
+    # 注入登录态 cookie
     load_reddit_cookies(session)
 
     print(f"[🔎] 正在通过 old.reddit.com 抓取 r/{REDDIT_SUBREDDIT}")
     if catch_up_mode:
         print(f"     [追补模式] 截止 {catch_up_days} 天内，跳过历史边界检查")
 
-    # 预热：先访问首页建立会话信任（模拟回访用户，避免"新访客打深链"触发风控）
+    # 预热：先访问首页建立会话
     try:
         _safe_get(session, f"https://old.reddit.com/")
     except Exception as e:
