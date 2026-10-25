@@ -1,5 +1,11 @@
 # 🤖 Game Feedback AI Agent: 全域游戏舆情自动化哨兵
 
+<h1 align="center">⚠️ 由于分享需要，部分做了脱敏处理，<br>未经测试，可能存在部分BUG ⚠️</h1>
+
+<h3 align="center">DESENSITIZED FOR SHARING · NOT FULLY TESTED · MAY CONTAIN BUGS</h3>
+
+---
+
 > **当前版本**: v3.0.0 | **最后更新**: 2026-09-05
 
 ## 📖 项目背景
